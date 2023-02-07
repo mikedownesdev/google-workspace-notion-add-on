@@ -1,0 +1,24 @@
+{
+    "oauthScopes": [
+      "https://www.googleapis.com/auth/gmail.addons.execute",
+      "https://www.googleapis.com/auth/calendar.addons.execute",
+      "https://www.googleapis.com/auth/drive.file",
+      "openid",
+      "email"
+    ],
+    "addOns": {
+      "common": {
+        "name": "Notion Add-on",
+        "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/1024px-Notion-logo.svg.png",
+        "homepageTrigger": {
+          "runFunction": "https://notion-add-on-gbijtoohqa-uc.a.run.app"
+        }
+      },
+      "gmail": {},
+      "drive": {},
+      "calendar": {},
+      "docs": {},
+      "sheets": {},
+      "slides": {}
+    }
+}
