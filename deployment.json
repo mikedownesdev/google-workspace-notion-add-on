@@ -11,7 +11,7 @@
         "name": "Notion Add-on",
         "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/1024px-Notion-logo.svg.png",
         "homepageTrigger": {
-          "runFunction": "https://notion-add-on-gbijtoohqa-uc.a.run.app"
+          "runFunction": "http://localhost:8080"
         }
       },
       "gmail": {},

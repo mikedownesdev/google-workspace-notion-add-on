@@ -4,6 +4,10 @@ const { OAuth2Client } = require('google-auth-library');
 const {Datastore} = require('@google-cloud/datastore');
 const datastore = new Datastore();
 
+const { Client } = require('@notionhq/client');
+// require('dotenv').config()
+const notion = new Client({ auth: process.env.NOTION_ACCESS_TOKEN });
+
 // Create and configure the app
 const app = express();
 
@@ -15,12 +19,13 @@ app.use(express.json());
 app.post('/', asyncHandler(async (req, res) => {
     const event = req.body;
     const user = await userInfo(event);
-    const tasks = await listTasks(user.sub);
-    const card = buildCard(req, tasks);
+    // const tasks = await listTasks(user.sub);
+    const generalHomepageCard = createDatabaseListCard();
+    // const card = buildCard(req, tasks);
     const responsePayload = {
         action: {
             navigations: [{
-                pushCard: card
+                pushCard: generalHomepageCard
             }]
         }
     };
@@ -135,12 +140,14 @@ function buildCard(req, tasks) {
         tasks.forEach(task => {
             const widget = {
                 decoratedText: {
-                    text: task.text,
+                    // text: task.text,
+                    text: task.name,
                     wrapText: true,
                     switchControl: {
                         controlType: 'CHECKBOX',
                         name: 'completedTasks',
-                        value: task[datastore.KEY].id,
+                        // value: task[datastore.KEY].id,
+                        value: task.id,
                         selected: false,
                         onChangeAction: {
                             function: `${baseUrl}/complete`,
@@ -207,13 +214,99 @@ async function userInfo(event) {
 }
 
 async function listTasks(userId) {
-    const parentKey = datastore.key(['User', userId]);
-    const query = datastore.createQuery('Task')
-        .hasAncestor(parentKey)
-        .order('created')
-        .limit(20);
-    const [tasks] = await datastore.runQuery(query);
-    return tasks;;
+    // const parentKey = datastore.key(['User', userId]);
+    // const query = datastore.createQuery('Task')
+    //     .hasAncestor(parentKey)
+    //     .order('created')
+    //     .limit(20);
+    // const [tasks] = await datastore.runQuery(query);
+    // return tasks;;
+}
+
+async function listUsers() {
+    const listUsersResponse = await notion.users.list({})
+    const users = listUsersResponse.results;
+    return users
+}
+
+function createDatabaseListCard() {
+    // const baseUrl = `${req.protocol}://${req.hostname}${req.baseUrl}`;
+
+    const card = {
+        name: "DATABASE_LIST",
+        sections: [
+            {
+              "header": "Databases",
+              "widgets": [
+                {
+                  "decoratedText": {
+                    "text": "Database Name",
+                    "bottomLabel": "Bottom Label",
+                    "topLabel": "",
+                    "startIcon": {
+                      "knownIcon": "EMAIL",
+                      "altText": "Send an email"
+                    }
+                  }
+                },
+                {
+                  "decoratedText": {
+                    "text": "Database Name",
+                    "bottomLabel": "Bottom Label",
+                    "topLabel": "",
+                    "startIcon": {
+                      "knownIcon": "EMAIL",
+                      "altText": "Send an email"
+                    }
+                  }
+                },
+                {
+                  "decoratedText": {
+                    "text": "Database Name",
+                    "bottomLabel": "Bottom Label",
+                    "topLabel": "",
+                    "startIcon": {
+                      "knownIcon": "EMAIL",
+                      "altText": "Send an email"
+                    }
+                  }
+                }
+              ]
+            }
+        ],
+    };
+
+    return card
+}
+
+function buildDatabaseCard() {
+    const databaseName = "Database Name"
+    const card = {
+        "header": {
+          "title": `${databaseName}`,
+          "imageUrl": "https://source.unsplash.com/featured/320x180?nature&sig=8",
+          "imageType": "SQUARE"
+        },
+        "fixedFooter": {
+          "primaryButton": {
+            "text": "Click me",
+            "onClick": {
+              "action": {
+                "function": "TODO",
+                "parameters": []
+              }
+            }
+          }
+        }
+    }
+
+    return card
+}
+
+async function listDatabases() {
+    const listDatabasesResponse = await notion.databases.list({})
+    const databases = listDatabasesResponse.results;
+    return databases
 }
 
 async function addTask(userId, task) {
