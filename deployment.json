@@ -2,6 +2,7 @@
     "oauthScopes": [
       "https://www.googleapis.com/auth/gmail.addons.execute",
       "https://www.googleapis.com/auth/calendar.addons.execute",
+      "https://www.googleapis.com/auth/calendar.addons.current.event.read",
       "https://www.googleapis.com/auth/drive.file",
       "openid",
       "email"
@@ -11,14 +12,21 @@
         "name": "Notion Add-on",
         "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/1024px-Notion-logo.svg.png",
         "homepageTrigger": {
-          "runFunction": "http://localhost:8080"
+          "runFunction": "https://eca1-68-197-251-51.ngrok.io"
         }
       },
-      "gmail": {},
+      "calendar": {
+        "homepageTrigger": {
+          "runFunction": "https://eca1-68-197-251-51.ngrok.io/calendarHome"
+        },
+        "eventOpenTrigger": {
+          "runFunction": "https://eca1-68-197-251-51.ngrok.io/calendarEventOpen"
+        }
+      },
       "drive": {},
-      "calendar": {},
       "docs": {},
-      "sheets": {},
-      "slides": {}
+      "gmail": {},
+      "slides": {},
+      "sheets": {}
     }
 }

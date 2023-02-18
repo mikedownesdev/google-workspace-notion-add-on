@@ -1,12 +1,17 @@
-const express = require('express');
-const asyncHandler = require('express-async-handler');
-const { OAuth2Client } = require('google-auth-library');
-const {Datastore} = require('@google-cloud/datastore');
-const datastore = new Datastore();
-
-const { Client } = require('@notionhq/client');
-// require('dotenv').config()
+// const express = require('express');
+import express from 'express';
+// const asyncHandler = require('express-async-handler');
+import expressAsyncHandler from 'express-async-handler';
+// const { OAuth2Client } = require('google-auth-library');
+import { OAuth2Client } from 'google-auth-library';
+// const { Client } = require('@notionhq/client');
+import { Client } from '@notionhq/client';
 const notion = new Client({ auth: process.env.NOTION_ACCESS_TOKEN });
+
+// const {Datastore} = require('@google-cloud/datastore');
+// const datastore = new Datastore();
+
+import { calendarHomepage, calendarEventOpen } from './calendar/index.js';
 
 // Create and configure the app
 const app = express();
@@ -15,8 +20,12 @@ const app = express();
 app.set("trust proxy", true);
 app.use(express.json());
 
+// const routes = [
+//     {path: "/", function: }
+// ]
+
 // Initial route for the add-on
-app.post('/', asyncHandler(async (req, res) => {
+app.post('/', expressAsyncHandler(async (req, res) => {
     const event = req.body;
     const user = await userInfo(event);
     // const tasks = await listTasks(user.sub);
@@ -32,7 +41,35 @@ app.post('/', asyncHandler(async (req, res) => {
     res.json(responsePayload);
 }));
 
-app.post('/newTask', asyncHandler(async (req, res) => {
+// Initial route for the add-on
+app.post('/calendarHome', expressAsyncHandler(async (req, res) => {
+    const event = req.body;
+    const card = calendarHomepage()
+    const responsePayload = {
+        action: {
+            navigations: [{
+                pushCard: card
+            }]
+        }
+    };
+    res.json(responsePayload);
+}));
+
+app.post('/calendarEventOpen', expressAsyncHandler(async (req, res) => {
+    const event = req.body;
+    const calendarEventId = event.calendar.id;
+    const card = await calendarEventOpen(calendarEventId)
+    const responsePayload = {
+        action: {
+            navigations: [{
+                pushCard: card
+            }]
+        }
+    };
+    res.json(responsePayload);
+}));
+
+app.post('/newTask', expressAsyncHandler(async (req, res) => {
     const event = req.body;
     const user = await userInfo(event);
 
@@ -74,7 +111,7 @@ app.post('/newTask', asyncHandler(async (req, res) => {
     res.json(responsePayload);
 }));
 
-app.post('/complete', asyncHandler(async (req, res) => {
+app.post('/complete', expressAsyncHandler(async (req, res) => {
     const event = req.body;
     const user = await userInfo(event);
 
@@ -103,7 +140,7 @@ app.post('/complete', asyncHandler(async (req, res) => {
     res.json(responsePayload);
 }));
 
-app.post('/authorizeFile', asyncHandler(async (req, res) => {
+app.post('/authorizeFile', expressAsyncHandler(async (req, res) => {
     const responsePayload = {
         renderActions: {
             hostAppAction: {
